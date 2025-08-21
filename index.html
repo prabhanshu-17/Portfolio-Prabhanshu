@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Prabhanshu Saxena • Portfolio</title>
+
+<style>
+:root {
+  --bg: #f8fafc;
+  --text: #1e293b;
+  --muted: #64748b;
+  --brand: #3B6084;
+  --accent: #4e7ca8;
+  --surface: #ffffff;
+  --border: #e2e8f0;
+  --radius: 16px;
+  --shadow: 0 8px 30px rgba(59,96,132,0.15);
+  --font: 'Inter', system-ui, sans-serif;
+}
+body.dark {
+  --bg: #0f172a;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --brand: #60a5fa;
+  --accent: #3b82f6;
+  --surface: #1e293b;
+  --border: #334155;
+  --shadow: 0 8px 30px rgba(0,0,0,0.6);
+}
+body {
+  margin: 0;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Canvas Background */
+canvas#bgCanvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: -1;
+  background: var(--bg);
+}
+
+/* Navbar */
+header {
+  position: sticky; top: 0; z-index: 1000;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.3s;
+}
+body.dark header {
+  background: rgba(15,23,42,0.9);
+}
+.nav {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 6%;
+}
+.nav strong { color: var(--brand); font-size: 1.3rem; }
+.nav-links {
+  display: flex; gap: 14px; align-items: center;
+  transition: max-height 0.4s ease, opacity 0.4s ease;
+}
+.nav a {
+  color: var(--muted); font-weight: 600; text-decoration: none;
+}
+.nav a:hover { color: var(--brand); }
+
+/* Hamburger */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  gap: 5px;
+}
+.hamburger span {
+  width: 24px; height: 3px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: 0.3s;
+}
+
+/* Dark mode toggle */
+.theme-toggle {
+  background: none; border: none;
+  font-size: 1.3rem; cursor: pointer;
+  color: var(--brand);
+}
+
+/* Mobile Nav Animation */
+@media (max-width: 768px) {
+  .nav-links {
+    position: absolute;
+    top: 60px; left: 0; right: 0;
+    background: var(--surface);
+    flex-direction: column;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+  }
+  .nav-links.open {
+    max-height: 300px;
+    opacity: 1;
+  }
+  .hamburger { display: flex; }
+}
+
+/* Hero */
+.hero {
+  padding: 120px 6% 80px;
+  text-align: center;
+}
+.hero h1 {
+  font-size: 3rem;
+  margin: 0;
+  color: var(--brand);
+}
+.hero p {
+  margin: 12px auto 24px;
+  max-width: 720px;
+  font-size: 1.2rem;
+  color: var(--muted);
+}
+.btn {
+  padding: 14px 26px;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+}
+.btn.primary {
+  background: linear-gradient(135deg, var(--brand), var(--accent));
+  color: #fff;
+  box-shadow: var(--shadow);
+}
+.btn.primary:hover { opacity: 0.9; }
+
+/* Sections */
+section { padding: 80px 6%; }
+.section-head h2 {
+  margin: 0; font-size: 2rem; color: var(--brand);
+}
+.sub { color: var(--muted); margin-bottom: 30px; }
+
+/* Cards & Flashcards */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
+  gap: 28px;
+}
+.flashcard { perspective: 1000px; }
+.flash-inner {
+  position: relative; width: 100%; height: 260px;
+  transform-style: preserve-3d; transition: transform 0.6s;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.flashcard:hover .flash-inner { transform: rotateY(180deg); }
+.flash-front, .flash-back {
+  position: absolute; inset: 0;
+  display: flex; justify-content: center; align-items: center;
+  flex-direction: column; padding: 20px;
+  border-radius: var(--radius);
+  backface-visibility: hidden;
+}
+.flash-front {
+  background: var(--surface); 
+  border: 1px solid var(--border);
+  border-top: 6px solid var(--brand);
+}
+.flash-front h3 { margin: 0; color: var(--brand); }
+.flash-front p { color: var(--muted); text-align: center; font-size: .9rem; }
+.flash-back {
+  transform: rotateY(180deg);
+  background: linear-gradient(135deg, var(--brand), var(--accent));
+  color: #fff; text-align: center;
+}
+.grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); }
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 6px solid var(--brand);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.card strong { color: var(--brand); display: block; margin-bottom: 10px; }
+.skill-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--brand), var(--accent));
+  color: #fff; font-size: .85rem; font-weight: 600;
+}
+
+/* Contact */
+form { display: grid; gap: 14px; max-width: 500px; margin: auto; }
+input, textarea {
+  padding: 14px; border-radius: var(--radius);
+  border: 1px solid var(--border); font-size: 1rem;
+}
+button[type=submit] { background: var(--brand); color:#fff; border:none; border-radius: var(--radius); padding:14px; cursor:pointer; font-weight:600; }
+button[type=submit]:hover { opacity:0.9; }
+
+/* Footer */
+footer {
+  padding: 30px 10px;
+  text-align: center;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  margin-top: 40px;
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+
+<header>
+  <div class="nav">
+    <strong>Prabhanshu</strong>
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+    <nav class="nav-links" id="nav-links">
+      <a href="#skills">Skills</a>
+      <a href="#projects">Projects</a>
+      <a href="#education">Education</a>
+      <a href="#courses">Courses</a>
+      <a href="#contact">Contact</a>
+      <a href="https://www.linkedin.com/in/prabhanshu-saxena-b39a67345" target="_blank">LinkedIn</a>
+
+      <button class="theme-toggle" id="theme-toggle">🌙</button>
+    </nav>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <h1>Hi, I'm Prabhanshu Saxena</h1>
+  <p>UI/UX & Frontend Developer • Graphic Designer • AI Enthusiast</p>
+  <a href="#projects"><button class="btn primary">View Projects</button></a>
+</section>
+
+<!-- Skills -->
+<section id="skills">
+  <div class="section-head">
+    <h2>Skills</h2>
+    <p class="sub">Design + Development</p>
+  </div>
+  <div class="grid">
+    <div class="card"><strong>Design</strong><div class="skill-row">
+      <span class="pill">Figma</span><span class="pill">Canva</span><span class="pill">UI/UX</span>
+      <span class="pill">Prototyping</span><span class="pill">Wireframing</span>
+    </div></div>
+    <div class="card"><strong>Development</strong><div class="skill-row">
+      <span class="pill">HTML</span><span class="pill">CSS</span><span class="pill">JavaScript</span>
+      <span class="pill">Python</span><span class="pill">C++</span>
+    </div></div>
+    <div class="card"><strong>Other</strong><div class="skill-row">
+      <span class="pill">Problem Solving</span><span class="pill">Teamwork</span>
+      <span class="pill">Graphic Design</span>
+    </div></div>
+  </div>
+</section>
+<!-- Projects -->
+<section id="projects">
+  <div class="section-head">
+    <h2>Projects</h2>
+    <p class="sub">Flashcard Showcase</p>
+  </div>
+  <div class="projects-grid">
+
+    <div class="flashcard"><div class="flash-inner">
+      <div class="flash-front"><h3>BookNest</h3><p>Digital library platform improving reading experience.</p></div>
+      <div class="flash-back">
+        <p>
+          <a href="https://www.figma.com/design/MRzGHpNFLRM0De7pPQ1aJT/BookNest?node-id=2-2"
+             target="_blank" style="color:#fff;">View</a>
+        </p>
+      </div>
+    </div></div>
+
+    <div class="flashcard"><div class="flash-inner">
+      <div class="flash-front"><h3>Pizza Hut Redesign</h3><p>Responsive ordering flow redesign in Figma.</p></div>
+      <div class="flash-back">
+        <p>
+          <a href="https://www.figma.com/proto/e37erQu5bxbHLzwPYErrF9/Pizza-hut"
+             target="_blank" style="color:#fff;">View</a>
+        </p>
+      </div>
+    </div></div>
+
+    <div class="flashcard"><div class="flash-inner">
+      <div class="flash-front"><h3>DONUTS Ad</h3><p>Interactive digital advertisement for a donut brand.</p></div>
+      <div class="flash-back">
+        <p>
+          <a href="https://www.figma.com/proto/5RTQLdkyGCLRkAZFU26KG8/DONUTS"
+             target="_blank" style="color:#fff;">View</a>
+        </p>
+      </div>
+    </div></div>
+
+  </div>
+</section>
+
+
+<!-- Education -->
+<section id="education">
+  <div class="section-head"><h2>Education</h2></div>
+  <div class="grid">
+    <div class="card"><h4>B.Tech, Computer Science & Engineering</h4><p>2023 – 2027 • VIT Bhopal University</p></div>
+    <div class="card"><h4>Senior Secondary (XII), CBSE</h4><p>2023 • Pioneer Convent</p></div>
+    <div class="card"><h4>Secondary (X), CBSE</h4><p>2021 • Vatsalya Senior Secondary School</p></div>
+  </div>
+</section>
+
+<!-- Courses -->
+<section id="courses">
+  <div class="section-head"><h2>Courses</h2></div>
+  <div class="grid">
+    <div class="card"><h4>Introduction to User Experience Design</h4><p>Coursera • May 2025</p></div>
+    <div class="card"><h4>Exploring AI Use Cases & Applications</h4><p>Coursera • May 2025</p></div>
+    <div class="card"><h4>Google AI Essential</h4><p>Coursera • Sep 2024 – Dec 2024</p></div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section id="contact">
+  <div class="section-head"><h2>Contact</h2></div>
+  <p>You can reach me directly by email:</p>
+  <a href="mailto:prabhanshu72116@gmail.com" class="btn primary">Send Message</a>
+</section>
+
+<footer>
+  © <span id="year"></span> Prabhanshu Saxena | 
+  <a href="https://www.linkedin.com/in/prabhanshu-saxena-b39a67345" target="_blank">LinkedIn</a>
+</footer>
+
+
+<script>
+// Year auto
+document.getElementById('year').textContent=new Date().getFullYear();
+
+// Dark mode
+const themeBtn=document.getElementById('theme-toggle');
+themeBtn.addEventListener('click',()=>{
+  document.body.classList.toggle('dark');
+  themeBtn.textContent=document.body.classList.contains('dark')?"☀️":"🌙";
+});
+
+// Hamburger
+const hamburger=document.getElementById('hamburger');
+const navLinks=document.getElementById('nav-links');
+hamburger.addEventListener('click',()=>{navLinks.classList.toggle('open');});
+
+// Canvas Particles
+const canvas=document.getElementById('bgCanvas');
+const ctx=canvas.getContext('2d');
+let particles=[],mouse={x:null,y:null};
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}
+window.addEventListener('resize',resize);resize();
+function init(){
+  particles=[];
+  let count=innerWidth<768?40:80;
+  for(let i=0;i<count;i++){
+    particles.push({
+      x:Math.random()*canvas.width,
+      y:Math.random()*canvas.height,
+      r:2+Math.random()*2,
+      dx:(Math.random()-0.5)*1,
+      dy:(Math.random()-0.5)*1
+    });
+  }
+}
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  for(let p of particles){
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--brand');
+    ctx.fill();
+    p.x+=p.dx; p.y+=p.dy;
+    if(p.x<0||p.x>canvas.width)p.dx*=-1;
+    if(p.y<0||p.y>canvas.height)p.dy*=-1;
+    if(mouse.x&&mouse.y){
+      let dx=p.x-mouse.x,dy=p.y-mouse.y,dist=Math.sqrt(dx*dx+dy*dy);
+      let range=innerWidth<768?100:180;
+      if(dist<range){
+        ctx.beginPath();
+        ctx.moveTo(p.x,p.y);
+        ctx.lineTo(mouse.x,mouse.y);
+        ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue('--accent');
+        ctx.lineWidth=0.8;
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(draw);
+}
+init();draw();
+window.addEventListener('mousemove',e=>{mouse.x=e.x;mouse.y=e.y;});
+window.addEventListener('touchmove',e=>{
+  mouse.x=e.touches[0].clientX;
+  mouse.y=e.touches[0].clientY;
+});
+</script>
+</body>
+</html>
